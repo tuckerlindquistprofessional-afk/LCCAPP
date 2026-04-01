@@ -1,0 +1,717 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400;1,600&family=Jost:wght@300;400;500;600;700&display=swap');
+
+  :root {
+    --bg: #f4f3f0;
+    --surface: #ffffff;
+    --card: #ffffff;
+    --border: #ddd9d3;
+    --navy: #1a2540;
+    --teal: #2e7d7a;
+    --teal-light: #e8f4f3;
+    --teal-mid: #c2dedd;
+    --accent: #2e7d7a;
+    --text: #1a2540;
+    --muted: #7a8099;
+    --check: #2e7d7a;
+    --danger: #c0392b;
+    --gold: #b8923a;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Jost', sans-serif;
+    min-height: 100vh;
+    padding-bottom: 80px;
+  }
+
+  header {
+    background: var(--navy);
+    padding: 16px 20px 14px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    box-shadow: 0 2px 12px rgba(26,37,64,0.18);
+  }
+
+  .logo-area { display: flex; flex-direction: column; }
+  .logo-wordmark {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 22px;
+    font-weight: 600;
+    color: #ffffff;
+    letter-spacing: 1px;
+    line-height: 1.1;
+  }
+  .logo-wordmark span { color: var(--teal); font-style: italic; }
+  .logo-tagline {
+    font-family: 'Jost', sans-serif;
+    font-size: 9px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: #8fa0bb;
+    margin-top: 2px;
+  }
+
+  .header-right { display: flex; gap: 10px; align-items: center; }
+
+  .progress-ring { position: relative; width: 48px; height: 48px; }
+  .progress-ring svg { transform: rotate(-90deg); }
+  .progress-ring circle { fill: none; stroke-width: 3.5; }
+  .ring-bg { stroke: rgba(255,255,255,0.15); }
+  .ring-fill { stroke: var(--teal); stroke-linecap: round; transition: stroke-dashoffset 0.4s ease; }
+  .progress-label {
+    position: absolute; inset: 0;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 11px; font-weight: 600; color: #fff;
+  }
+
+  .btn {
+    background: transparent;
+    border: 1.5px solid rgba(255,255,255,0.25);
+    color: rgba(255,255,255,0.8);
+    padding: 7px 13px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-family: 'Jost', sans-serif;
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+    transition: all 0.15s;
+    display: flex; align-items: center; gap: 5px;
+  }
+  .btn:hover { border-color: var(--teal); color: #fff; background: rgba(46,125,122,0.15); }
+  .btn-reset { border-color: rgba(192,57,43,0.5); color: #e07060; }
+  .btn-reset:hover { background: rgba(192,57,43,0.12); border-color: #c0392b; color: #e07060; }
+
+  main { padding: 16px; max-width: 600px; margin: 0 auto; }
+
+  .section-label {
+    font-family: 'Jost', sans-serif;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 3px;
+    color: var(--teal);
+    text-transform: uppercase;
+    margin: 20px 0 10px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .section-label::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--teal-mid);
+  }
+
+  /* STEPS */
+  .step-list { display: flex; flex-direction: column; gap: 5px; }
+
+  .step-item {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 11px 14px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    transition: all 0.15s;
+    cursor: pointer;
+    user-select: none;
+    box-shadow: 0 1px 3px rgba(26,37,64,0.04);
+  }
+  .step-item:hover { border-color: var(--teal-mid); box-shadow: 0 2px 8px rgba(46,125,122,0.08); }
+  .step-item.done { border-color: var(--teal-mid); background: var(--teal-light); }
+  .step-item.done .step-name { text-decoration: line-through; color: var(--muted); }
+
+  .checkbox {
+    width: 20px; height: 20px;
+    border: 2px solid var(--border);
+    border-radius: 5px;
+    flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.15s;
+    background: var(--bg);
+  }
+  .step-item.done .checkbox { background: var(--teal); border-color: var(--teal); }
+  .checkbox svg { display: none; }
+  .step-item.done .checkbox svg { display: block; }
+
+  .step-name {
+    flex: 1;
+    font-size: 13.5px;
+    font-weight: 400;
+    transition: color 0.15s;
+    color: var(--text);
+  }
+
+  .step-edit-input {
+    flex: 1;
+    background: var(--bg);
+    border: 1.5px solid var(--teal);
+    color: var(--text);
+    border-radius: 5px;
+    padding: 3px 8px;
+    font-family: 'Jost', sans-serif;
+    font-size: 13.5px;
+    outline: none;
+  }
+
+  .step-actions { display: flex; gap: 4px; }
+  .icon-btn {
+    width: 26px; height: 26px;
+    border-radius: 5px;
+    border: 1px solid var(--border);
+    background: none;
+    color: var(--muted);
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.15s;
+    font-size: 12px;
+  }
+  .icon-btn:hover { background: var(--bg); color: var(--text); border-color: var(--teal-mid); }
+  .icon-btn.del:hover { border-color: var(--danger); color: var(--danger); background: #fdf1f0; }
+  .icon-btn.save-edit { color: var(--teal); border-color: var(--teal); }
+
+  .add-row { display: flex; gap: 8px; margin-top: 10px; }
+  .add-input {
+    flex: 1;
+    background: var(--card);
+    border: 1.5px solid var(--border);
+    color: var(--text);
+    border-radius: 8px;
+    padding: 10px 14px;
+    font-family: 'Jost', sans-serif;
+    font-size: 13.5px;
+    outline: none;
+    transition: border-color 0.15s;
+    box-shadow: 0 1px 3px rgba(26,37,64,0.04);
+  }
+  .add-input:focus { border-color: var(--teal); }
+  .add-input::placeholder { color: #b0b8cc; }
+
+  .btn-add {
+    background: var(--navy);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    padding: 10px 16px;
+    font-family: 'Jost', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.15s;
+    letter-spacing: 0.5px;
+  }
+  .btn-add:hover { background: var(--teal); }
+
+  /* ZONES */
+  .zone-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+
+  .zone-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    overflow: hidden;
+    transition: border-color 0.2s;
+    box-shadow: 0 1px 4px rgba(26,37,64,0.05);
+  }
+  .zone-card.has-photos { border-color: var(--teal-mid); }
+
+  .zone-header {
+    padding: 9px 10px;
+    display: flex; align-items: center; justify-content: space-between;
+    background: var(--navy);
+  }
+  .zone-name {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: #fff;
+    flex: 1;
+  }
+  .zone-name-input {
+    flex: 1;
+    background: rgba(255,255,255,0.1);
+    border: 1px solid rgba(255,255,255,0.3);
+    color: #fff;
+    border-radius: 4px;
+    padding: 2px 6px;
+    font-family: 'Jost', sans-serif;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    outline: none;
+  }
+  .zone-header-btns { display: flex; gap: 3px; }
+  .zone-icon-btn {
+    width: 22px; height: 22px;
+    border-radius: 4px;
+    border: 1px solid rgba(255,255,255,0.2);
+    background: none;
+    color: rgba(255,255,255,0.6);
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 11px;
+    transition: all 0.15s;
+  }
+  .zone-icon-btn:hover { background: rgba(255,255,255,0.1); color: #fff; }
+  .zone-icon-btn.del-zone:hover { border-color: #e07060; color: #e07060; }
+
+  .zone-images {
+    padding: 8px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6px;
+  }
+
+  .img-slot {
+    position: relative;
+    aspect-ratio: 1;
+    background: var(--bg);
+    border: 1.5px dashed var(--border);
+    border-radius: 6px;
+    overflow: hidden;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    flex-direction: column;
+    gap: 3px;
+    transition: border-color 0.15s, background 0.15s;
+  }
+  .img-slot:hover { border-color: var(--teal); background: var(--teal-light); }
+  .img-slot img { width: 100%; height: 100%; object-fit: cover; position: absolute; inset: 0; }
+  .img-slot .slot-label { font-size: 9px; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; font-weight: 600; }
+  .img-slot .slot-icon { font-size: 16px; color: var(--muted); }
+
+  .img-remove {
+    position: absolute; top: 3px; right: 3px;
+    width: 17px; height: 17px;
+    background: rgba(26,37,64,0.75);
+    border-radius: 50%;
+    border: none;
+    color: #fff;
+    font-size: 10px;
+    cursor: pointer;
+    display: none;
+    align-items: center; justify-content: center;
+    z-index: 2;
+  }
+  .img-slot:hover .img-remove { display: flex; }
+
+  .before-tag, .after-tag {
+    font-size: 8px;
+    padding: 1px 5px;
+    border-radius: 20px;
+    font-weight: 700;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+    margin-top: 2px;
+  }
+  .before-tag { background: #fff3e0; color: #b8923a; border: 1px solid #e8c97a; }
+  .after-tag { background: var(--teal-light); color: var(--teal); border: 1px solid var(--teal-mid); }
+
+  .zone-note-input {
+    width: 100%;
+    background: transparent;
+    border: none;
+    border-top: 1px solid var(--border);
+    color: var(--muted);
+    font-family: 'Jost', sans-serif;
+    font-size: 11px;
+    padding: 6px 10px;
+    resize: none;
+    outline: none;
+  }
+  .zone-note-input::placeholder { color: #c8ccd8; }
+
+  /* Add zone row */
+  .add-zone-row {
+    grid-column: 1 / -1;
+    display: flex; gap: 8px;
+  }
+
+  /* MODAL */
+  .modal-overlay {
+    position: fixed; inset: 0;
+    background: rgba(26,37,64,0.7);
+    z-index: 200;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+  }
+  .modal-overlay.open { display: flex; }
+  .modal {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    width: 100%;
+    max-width: 320px;
+    padding: 26px 24px;
+    text-align: center;
+    box-shadow: 0 8px 32px rgba(26,37,64,0.18);
+  }
+  .modal-icon { font-size: 28px; margin-bottom: 10px; }
+  .modal h3 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 22px;
+    font-weight: 600;
+    color: var(--navy);
+    margin-bottom: 6px;
+  }
+  .modal p { font-size: 13px; color: var(--muted); margin-bottom: 20px; line-height: 1.5; }
+  .modal-btns { display: flex; gap: 10px; justify-content: center; }
+  .modal-btn {
+    padding: 9px 20px;
+    border-radius: 7px;
+    border: 1.5px solid var(--border);
+    font-family: 'Jost', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .modal-btn-cancel { background: var(--bg); color: var(--muted); }
+  .modal-btn-cancel:hover { border-color: var(--teal); color: var(--teal); }
+  .modal-btn-confirm { background: var(--navy); color: #fff; border-color: var(--navy); }
+  .modal-btn-confirm:hover { background: var(--teal); border-color: var(--teal); }
+
+  /* Divider line */
+  .divider { height: 1px; background: var(--border); margin: 6px 0; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo-area">
+    <div class="logo-wordmark">Lindquist <span>Car Care</span></div>
+    <div class="logo-tagline">Your Car, Our Care</div>
+  </div>
+  <div class="header-right">
+    <div class="progress-ring">
+      <svg width="48" height="48" viewBox="0 0 48 48">
+        <circle class="ring-bg" cx="24" cy="24" r="19"/>
+        <circle class="ring-fill" id="ringFill" cx="24" cy="24" r="19"
+          stroke-dasharray="119.38"
+          stroke-dashoffset="119.38"/>
+      </svg>
+      <div class="progress-label" id="progressLabel">0%</div>
+    </div>
+    <button class="btn btn-reset" onclick="confirmReset()">↺ Reset</button>
+  </div>
+</header>
+
+<main>
+  <div class="section-label">Detailing Checklist</div>
+  <div class="step-list" id="stepList"></div>
+  <div class="add-row" style="margin-top:10px;">
+    <input class="add-input" id="newStepInput" placeholder="Add a custom step…" onkeydown="if(event.key==='Enter')addStep()">
+    <button class="btn-add" onclick="addStep()">+ Step</button>
+  </div>
+
+  <div class="section-label" style="margin-top:24px;">Car Zones — Before & After</div>
+  <div class="zone-grid" id="zoneGrid"></div>
+  <div class="add-row" style="margin-top:10px;">
+    <input class="add-input" id="newZoneInput" placeholder="Add a zone (e.g. Door Jambs)…" onkeydown="if(event.key==='Enter')addZone()">
+    <button class="btn-add" onclick="addZone()">+ Zone</button>
+  </div>
+</main>
+
+<!-- Reset Modal -->
+<div class="modal-overlay" id="resetModal">
+  <div class="modal">
+    <div class="modal-icon">🔄</div>
+    <h3>Reset Checklist?</h3>
+    <p>All checkboxes will be cleared. Your steps, zones, and photos will remain.</p>
+    <div class="modal-btns">
+      <button class="modal-btn modal-btn-cancel" onclick="closeModal()">Cancel</button>
+      <button class="modal-btn modal-btn-confirm" onclick="doReset()">Yes, Reset</button>
+    </div>
+  </div>
+</div>
+
+<!-- Delete Zone Modal -->
+<div class="modal-overlay" id="deleteZoneModal">
+  <div class="modal">
+    <div class="modal-icon">🗑️</div>
+    <h3>Remove Zone?</h3>
+    <p id="deleteZoneMsg">This will remove the zone and its photos.</p>
+    <div class="modal-btns">
+      <button class="modal-btn modal-btn-cancel" onclick="closeModal()">Cancel</button>
+      <button class="modal-btn" style="background:#c0392b;color:#fff;border-color:#c0392b;" onclick="confirmDeleteZone()">Remove</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const DEFAULT_STEPS = [
+  "Pre-rinse & foam cannon",
+  "Two-bucket hand wash",
+  "Wheel & tire cleaning",
+  "Clay bar decontamination",
+  "Paint correction / polish",
+  "Wax or ceramic coating",
+  "Glass & windows",
+  "Interior vacuum",
+  "Dashboard & trim wipe-down",
+  "Leather conditioning",
+  "Final inspection & dressing",
+];
+
+const DEFAULT_ZONES = [
+  "Hood", "Roof", "Front Bumper", "Rear Bumper",
+  "Driver Side", "Passenger Side", "Wheels", "Interior",
+];
+
+let steps = JSON.parse(localStorage.getItem('lcc_steps') || 'null') || DEFAULT_STEPS.map(s => ({ name: s, done: false }));
+let zonePhotos = JSON.parse(localStorage.getItem('lcc_photos') || '{}');
+let zoneNotes = JSON.parse(localStorage.getItem('lcc_notes') || '{}');
+let zones = JSON.parse(localStorage.getItem('lcc_zones') || 'null') || [...DEFAULT_ZONES];
+let pendingDeleteZone = null;
+
+function save() {
+  localStorage.setItem('lcc_steps', JSON.stringify(steps));
+  localStorage.setItem('lcc_photos', JSON.stringify(zonePhotos));
+  localStorage.setItem('lcc_notes', JSON.stringify(zoneNotes));
+  localStorage.setItem('lcc_zones', JSON.stringify(zones));
+}
+
+// ── PROGRESS ──────────────────────────────────
+function updateProgress() {
+  const total = steps.length;
+  const done = steps.filter(s => s.done).length;
+  const pct = total === 0 ? 0 : Math.round((done / total) * 100);
+  const circ = 119.38;
+  document.getElementById('ringFill').style.strokeDashoffset = circ - (pct / 100) * circ;
+  document.getElementById('progressLabel').textContent = pct + '%';
+}
+
+// ── STEPS ──────────────────────────────────────
+function renderSteps() {
+  const list = document.getElementById('stepList');
+  list.innerHTML = '';
+  steps.forEach((step, i) => {
+    const div = document.createElement('div');
+    div.className = 'step-item' + (step.done ? ' done' : '');
+    div.innerHTML = `
+      <div class="checkbox" onclick="toggleStep(${i}); event.stopPropagation()">
+        <svg width="11" height="11" viewBox="0 0 11 11" fill="none">
+          <path d="M1.5 5.5l3 3 5-5" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      <span class="step-name" id="stepName${i}">${escHtml(step.name)}</span>
+      <div class="step-actions">
+        <button class="icon-btn" id="editBtn${i}" onclick="editStep(${i}); event.stopPropagation()" title="Edit">✏️</button>
+        <button class="icon-btn del" onclick="deleteStep(${i}); event.stopPropagation()" title="Delete">✕</button>
+      </div>
+    `;
+    div.addEventListener('click', () => toggleStep(i));
+    list.appendChild(div);
+  });
+  updateProgress();
+}
+
+function toggleStep(i) {
+  steps[i].done = !steps[i].done;
+  save(); renderSteps();
+}
+
+function editStep(i) {
+  const nameEl = document.getElementById('stepName' + i);
+  const input = document.createElement('input');
+  input.className = 'step-edit-input';
+  input.value = steps[i].name;
+  input.addEventListener('click', e => e.stopPropagation());
+  input.addEventListener('keydown', e => {
+    if (e.key === 'Enter') saveStepEdit(i, input.value);
+    if (e.key === 'Escape') renderSteps();
+  });
+  nameEl.replaceWith(input);
+  input.focus(); input.select();
+  const btn = document.getElementById('editBtn' + i);
+  btn.innerHTML = '✓'; btn.className = 'icon-btn save-edit';
+  btn.onclick = (e) => { e.stopPropagation(); saveStepEdit(i, input.value); };
+}
+
+function saveStepEdit(i, val) {
+  if (val.trim()) steps[i].name = val.trim();
+  save(); renderSteps();
+}
+
+function deleteStep(i) {
+  steps.splice(i, 1);
+  save(); renderSteps();
+}
+
+function addStep() {
+  const input = document.getElementById('newStepInput');
+  const val = input.value.trim();
+  if (!val) return;
+  steps.push({ name: val, done: false });
+  input.value = '';
+  save(); renderSteps();
+}
+
+// ── ZONES ─────────────────────────────────────
+function renderZones() {
+  const grid = document.getElementById('zoneGrid');
+  grid.innerHTML = '';
+  zones.forEach((zone, zi) => {
+    const before = zonePhotos[zone + '_before'];
+    const after = zonePhotos[zone + '_after'];
+    const note = zoneNotes[zone] || '';
+    const hasPhotos = !!(before || after);
+
+    const card = document.createElement('div');
+    card.className = 'zone-card' + (hasPhotos ? ' has-photos' : '');
+    card.innerHTML = `
+      <div class="zone-header">
+        <span class="zone-name" id="zoneName${zi}">${escHtml(zone)}</span>
+        <div class="zone-header-btns">
+          <button class="zone-icon-btn" id="zoneEditBtn${zi}" onclick="editZoneName(${zi})" title="Rename">✏️</button>
+          <button class="zone-icon-btn del-zone" onclick="promptDeleteZone(${zi})" title="Remove">✕</button>
+        </div>
+      </div>
+      <div class="zone-images">
+        <div class="img-slot" onclick="triggerUpload('${zone}','before')">
+          ${before
+            ? `<img src="${before}"><button class="img-remove" onclick="removePhoto(event,'${zone}','before')">✕</button>`
+            : `<span class="slot-icon">📷</span><span class="slot-label">Before</span><span class="before-tag">Before</span>`}
+        </div>
+        <div class="img-slot" onclick="triggerUpload('${zone}','after')">
+          ${after
+            ? `<img src="${after}"><button class="img-remove" onclick="removePhoto(event,'${zone}','after')">✕</button>`
+            : `<span class="slot-icon">📷</span><span class="slot-label">After</span><span class="after-tag">After</span>`}
+        </div>
+      </div>
+      <textarea class="zone-note-input" placeholder="Zone notes…" rows="1"
+        onchange="saveNote('${zone}', this.value)">${escHtml(note)}</textarea>
+    `;
+    grid.appendChild(card);
+  });
+}
+
+function editZoneName(zi) {
+  const nameEl = document.getElementById('zoneName' + zi);
+  const oldName = zones[zi];
+  const input = document.createElement('input');
+  input.className = 'zone-name-input';
+  input.value = oldName;
+  input.addEventListener('keydown', e => {
+    if (e.key === 'Enter') saveZoneName(zi, input.value, oldName);
+    if (e.key === 'Escape') renderZones();
+  });
+  nameEl.replaceWith(input);
+  input.focus(); input.select();
+  const btn = document.getElementById('zoneEditBtn' + zi);
+  btn.innerHTML = '✓';
+  btn.onclick = () => saveZoneName(zi, input.value, oldName);
+}
+
+function saveZoneName(zi, newName, oldName) {
+  newName = newName.trim();
+  if (!newName || newName === oldName) { renderZones(); return; }
+  zones[zi] = newName;
+  // migrate photos & notes to new key
+  ['before','after'].forEach(t => {
+    if (zonePhotos[oldName + '_' + t]) {
+      zonePhotos[newName + '_' + t] = zonePhotos[oldName + '_' + t];
+      delete zonePhotos[oldName + '_' + t];
+    }
+  });
+  if (zoneNotes[oldName]) {
+    zoneNotes[newName] = zoneNotes[oldName];
+    delete zoneNotes[oldName];
+  }
+  save(); renderZones();
+}
+
+function promptDeleteZone(zi) {
+  pendingDeleteZone = zi;
+  document.getElementById('deleteZoneMsg').textContent =
+    `Remove "${zones[zi]}"? This will also delete its photos and notes.`;
+  document.getElementById('deleteZoneModal').classList.add('open');
+}
+
+function confirmDeleteZone() {
+  if (pendingDeleteZone === null) return;
+  const zone = zones[pendingDeleteZone];
+  delete zonePhotos[zone + '_before'];
+  delete zonePhotos[zone + '_after'];
+  delete zoneNotes[zone];
+  zones.splice(pendingDeleteZone, 1);
+  pendingDeleteZone = null;
+  save(); renderZones();
+  closeModal();
+}
+
+function addZone() {
+  const input = document.getElementById('newZoneInput');
+  const val = input.value.trim();
+  if (!val) return;
+  zones.push(val);
+  input.value = '';
+  save(); renderZones();
+}
+
+function triggerUpload(zone, type) {
+  const inp = document.createElement('input');
+  inp.type = 'file'; inp.accept = 'image/*';
+  inp.onchange = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      zonePhotos[zone + '_' + type] = ev.target.result;
+      save(); renderZones();
+    };
+    reader.readAsDataURL(file);
+  };
+  inp.click();
+}
+
+function removePhoto(e, zone, type) {
+  e.stopPropagation();
+  delete zonePhotos[zone + '_' + type];
+  save(); renderZones();
+}
+
+function saveNote(zone, val) {
+  zoneNotes[zone] = val;
+  save();
+}
+
+// ── MODALS ────────────────────────────────────
+function confirmReset() { document.getElementById('resetModal').classList.add('open'); }
+function closeModal() {
+  document.querySelectorAll('.modal-overlay').forEach(m => m.classList.remove('open'));
+}
+function doReset() {
+  steps.forEach(s => s.done = false);
+  save(); renderSteps(); closeModal();
+}
+
+function escHtml(s) {
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+// ── INIT ──────────────────────────────────────
+renderSteps();
+renderZones();
+</script>
+</body>
+</html>
